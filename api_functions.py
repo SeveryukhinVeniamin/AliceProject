@@ -49,10 +49,12 @@ def coord_list_into_string(coordinates):
     return str(coordinates[0]) + ',' + str(coordinates[1])
 
 
-def save_image(ll, z, theme='light', maptype='map'):
+def save_image(ll, z, theme='light', maptype='map', pt=[]):
     ll_spn = f'll={coord_list_into_string(ll)}&z={z}&maptype={maptype}'
 
     map_request = f"{server_address_maps}{ll_spn}&apikey={api_key_maps}&theme={theme}"
+    if pt != []:
+        map_request += '&pt=' + '~'.join(list(map(lambda x: f'{x[0]},{x[1]},pm2rdm', pt)))
     response = requests.get(map_request)
 
     if not response:
@@ -63,4 +65,4 @@ def save_image(ll, z, theme='light', maptype='map'):
     return MAP_FILE
 
 # Пример запроса:
-# print(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='transit'))
+print(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='map', pt=[get_coordinates('Москва сити')]))

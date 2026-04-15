@@ -63,4 +63,4 @@ def save_image(ll, z, theme='light', maptype='map'):
     return MAP_FILE
 
 # Пример запроса:
-# print(save_image(get_coordinates('Москва'), 10, theme='dark', maptype=transit))
+# print(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='transit'))

@@ -5,6 +5,8 @@ api_key_geocode = '8013b162-6b42-4997-9691-77b7074026e0'
 server_address_maps = 'https://static-maps.yandex.ru/v1?'
 api_key_maps = 'f3a0fe3a-b07e-4840-a1da-06f18b2ddf13'
 MAP_FILE = "map.png"
+YANDEX_TOKEN = "y0__xC_lMXPBRij9xMgzezK-xaKlt5OX2HisrB0C4VM6L23kucj1A"
+SKILL_ID = "1087850d-a5d5-45c5-96da-dfcef7cf0448"  # !Пока ссылается на ДРУГОЙ скил, но служит для проверки!
 
 
 def get_coordinates(name):
@@ -64,5 +66,16 @@ def save_image(ll, z, theme='light', maptype='map', pt=[]):
         file.write(response.content)
     return MAP_FILE
 
+
+def send_image(image_name):
+    with open("map.png", "rb") as image_file:
+        files = {
+            "file": image_file
+        }
+        headers = {'Authorization': f"OAuth {YANDEX_TOKEN}"}
+        resp = requests.post(f'https://dialogs.yandex.net/api/v1/skills/{SKILL_ID}/images',
+                             files=files, headers=headers)
+    return resp.json()['image']['id']
+
 # Пример запроса:
-print(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='map', pt=[get_coordinates('Москва сити')]))
+# print(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='map', pt=[get_coordinates('Москва сити')]))

@@ -68,7 +68,7 @@ def save_image(ll, z, theme='light', maptype='map', pt=[]):
 
 
 def send_image(image_name):
-    with open("map.png", "rb") as image_file:
+    with open(image_name, "rb") as image_file:
         files = {
             "file": image_file
         }
@@ -78,4 +78,4 @@ def send_image(image_name):
     return resp.json()['image']['id']
 
 # Пример запроса:
-# print(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='map', pt=[get_coordinates('Москва сити')]))
+# id_image = send_image(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='transit', pt=[get_coordinates('Москва сити')]))

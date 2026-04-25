@@ -6,7 +6,7 @@ server_address_maps = 'https://static-maps.yandex.ru/v1?'
 api_key_maps = 'f3a0fe3a-b07e-4840-a1da-06f18b2ddf13'
 MAP_FILE = "map.png"
 YANDEX_TOKEN = "y0__xC_lMXPBRij9xMgzezK-xaKlt5OX2HisrB0C4VM6L23kucj1A"
-SKILL_ID = "1087850d-a5d5-45c5-96da-dfcef7cf0448"  # !Пока ссылается на ДРУГОЙ скил, но служит для проверки!
+SKILL_ID = "4d9bc848-79e1-4e46-a915-0ba0822d0ebd"  # !Пока ссылается на ДРУГОЙ скил, но служит для проверки!
 
 
 def get_coordinates(name):
@@ -51,20 +51,24 @@ def coord_list_into_string(coordinates):
     return str(coordinates[0]) + ',' + str(coordinates[1])
 
 
-def save_image(ll, z, theme='light', maptype='map', pt=[]):
+def make_image_url(ll, z, theme='light', maptype='map', pt=[]):
     ll_spn = f'll={coord_list_into_string(ll)}&z={z}&maptype={maptype}'
 
     map_request = f"{server_address_maps}{ll_spn}&apikey={api_key_maps}&theme={theme}"
     if pt != []:
         map_request += '&pt=' + '~'.join(list(map(lambda x: f'{x[0]},{x[1]},pm2rdm', pt)))
-    response = requests.get(map_request)
+    return map_request
+
+
+def save_image(url, file_name=MAP_FILE):
+    response = requests.get(url)
 
     if not response:
         return None
 
-    with open(MAP_FILE, "wb") as file:
+    with open(file_name, "wb") as file:
         file.write(response.content)
-    return MAP_FILE
+    return file_name
 
 
 def send_image(image_name):
@@ -77,5 +81,13 @@ def send_image(image_name):
                              files=files, headers=headers)
     return resp.json()['image']['id']
 
+
+def all_for_picture(place, size, pt=[], theme='light', maptype='map'):
+    pt = list(map(lambda x: get_coordinates(x), pt))
+    url = make_image_url(get_coordinates(place), z=size, theme=theme, maptype=maptype, pt=pt)
+    file_name = save_image(url)
+    map_id = send_image(file_name)
+    return map_id
+
 # Пример запроса:
-# id_image = send_image(save_image(get_coordinates('Москва'), 10, theme='dark', maptype='transit', pt=[get_coordinates('Москва сити')]))
+# id_image = all_for_picture('Москва', 10, ["Метро Чертановское",  "Метро Чистые пруды"]))

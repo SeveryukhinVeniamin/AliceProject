@@ -1,3 +1,4 @@
+# Import all module and library
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.orm import Session
@@ -7,6 +8,8 @@ SqlAlchemyBase = orm.declarative_base()
 __factory = None
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 def global_init(db_file):
     global __factory
 
@@ -27,6 +30,8 @@ def global_init(db_file):
     SqlAlchemyBase.metadata.create_all(engine)
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 def create_session() -> Session:
     global __factory
     return __factory()

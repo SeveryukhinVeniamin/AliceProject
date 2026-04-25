@@ -1,8 +1,10 @@
+# Import all module and library
 import datetime
 import sqlalchemy
 from .db_session import SqlAlchemyBase
 
 
+# Class for communicating with table in data base
 class Statistics(SqlAlchemyBase):
     __tablename__ = 'statistics'
 

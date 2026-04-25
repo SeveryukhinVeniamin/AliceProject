@@ -18,7 +18,7 @@ server_address_maps = 'https://static-maps.yandex.ru/v1?'
 api_key_maps = 'f3a0fe3a-b07e-4840-a1da-06f18b2ddf13'
 
 # This is path for loading map
-MAP_FILE = "map.png"
+MAP_FILE = "static/img/map.png"
 
 # This is id for alice skill
 SKILL_ID = "4d9bc848-79e1-4e46-a915-0ba0822d0ebd"

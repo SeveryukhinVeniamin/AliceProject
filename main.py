@@ -50,6 +50,10 @@ def index():
             <h5>There is information about users requests and places.</h5>
         <a/>
         <br>
+        <a target="_blank" href='/last_image' class="card-text">
+            <h5>There is last image.</h5>
+        <a/>
+        <br>
         <h3>We believe that this information was useful for you.</h3>
     </body>
 </html>'''
@@ -214,6 +218,28 @@ def statistics_of_users_and_places():
 </html>'''
     return text
 
+
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+# Page with last image
+@app.route('/last_image')
+def last_image():
+    return '''
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Last loaded image</title>
+    </head>
+
+    <body>
+        <h1>Last loaded image</h1>
+        <img src='static/img/map.png' alt='It looks like no images were loaded.'>
+    </body>
+</html>'''
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------

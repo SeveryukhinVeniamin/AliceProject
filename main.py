@@ -272,18 +272,36 @@ def main():
 def handle_dialog(req, res):
     user_id = req["session"]["user_id"]
 
-    if req["session"]["new"]:  # Определие нового пользователя
+    if req["session"]["new"]: # Определие нового пользователя
         sessionStorage[user_id] = {}
 
-        res["response"]["test"] = ("Привет, я путеводитель. "
+        res["response"]["text"] = ("Привет, я путеводитель. "
                                    "Напиши место с указанием маштаба карты, меток и/или маршрутов,"
                                    "а я отображу это на карте.")
         return
-    # ------------------------------------------------------------------------------------------------------------------
+    #-------------------------------------------------------------------------------------------------------------------
+    # Изменение параметров карты в зависимости от переданных переменных
     message_sections = cut_in_sections(req["request"]["nlu"])
     for i in message_sections:
         if message_sections[i] is not None:
-            sessionStorage[i] = message_sections[i]
+            sessionStorage[user_id][i] = message_sections[i]
+    # ------------------------------------------------------------------------------------------------------------------
+    # Обработка недостаточной информации
+    if "place" not in sessionStorage[user_id]:
+        res["response"]["text"] = "Ты забыл указать место."
+        res['response']['end_session'] = False
+    elif "size" not in sessionStorage[user_id]:
+        res["response"]["text"] = "Ты забыл указать маштаб."
+        res['response']['end_session'] = False
+    # ------------------------------------------------------------------------------------------------------------------
+    else:
+        p, s, pt, pl = (sessionStorage[user_id]["place"], sessionStorage[user_id]["size"],
+                        sessionStorage[user_id]["points"], sessionStorage[user_id]["ways"])
+        pt = [] if pt is None else pt
+        pl = [] if pl is None else pl
+
+        res["response"]["card"]["image_id"] = all_for_picture(p, s, pt=pt, pl=pl, user_id=user_id)
+        res['response']['end_session'] = False
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -291,14 +309,30 @@ def handle_dialog(req, res):
 # Распределение информации по типу: место, размер, метки или маршруты
 def cut_in_sections(nlu):
     place, size, points, ways = None, None, None, None
-    last_word = len(nlu["tokens"]) - 1
+    last_word = len(nlu["tokens"])
+
+    # Определиние индексов элементов запроса
     if "маршруты" in nlu["tokens"]:
-        ways, last_word = (nlu["tokens"].index("маршруты"), last_word), nlu["tokens"].index("маршруты")
+        _ways_, last_word = ([i for i in range(nlu["tokens"].index("маршруты"), last_word)],
+                             nlu["tokens"].index("маршруты"))
     if "метки" in nlu["tokens"]:
-        points, last_word = (nlu["tokens"].index("метки"), last_word), nlu["tokens"].index("метки")
+        _points_, last_word = ([i for i in range(nlu["tokens"].index("метки"), last_word)],
+                               nlu["tokens"].index("метки"))
     if "размер" in nlu["tokens"]:
-        size, last_word = (nlu["tokens"].index("размер"), last_word), nlu["tokens"].index("размер")
-    place = (0, last_word) if last_word != 0 else None
+        _size_, last_word = ([i for i in range(nlu["tokens"].index("размер"), last_word)],
+                             nlu["tokens"].index("размер"))
+    _place_ = [i for i in range(0, last_word)] if last_word != 0 else None
+    # ------------------------------------------------------------------------------------------------------------------
+    for i in nlu["entities"]:
+        if i["type"] == "YANDEX.GEO":
+            if i["tokens"]["start"] in _place_ and i["tokens"]["end"] - 1 in _place_:
+                place = " ".join(reversed([i["value"][j] for j in i["value"]]))
+            elif i["tokens"]["start"] in _points_ and i["tokens"]["end"] - 1 in _points_:
+                if points is None:
+                    points = []
+                points.append(" ".join(reversed([i["value"][j] for j in i["value"]])))
+        elif i["type"] == "YANDEX.NUMBER" and i["tokens"]["start"] in _size_ and i["tokens"]["end"] - 1 in _size_:
+            size = i["value"]
 
     message_sections = {"place": place, "size": size, "points": points, "ways": ways}
 

@@ -190,7 +190,7 @@ def clear_db():
 # If file was used not like module clear data base
 if __name__ == '__main__':
     db_session.global_init('db/statistics.db')
-    # clear_db()
+    clear_db()
     # Пример запроса:
     # print(all_for_picture('Москва', 9, ["Метро Чертановское",  "Метро Чистые пруды"]))
     #print(all_for_picture('Москва', 10, pt=["Метро Чертановское", "Метро Чистые пруды"],

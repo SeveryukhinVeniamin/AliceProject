@@ -38,21 +38,26 @@ def index():
         <h1>Hello client!</h1>
         <h3>That is main page of the site "Алиса путеводитель" where you can find information about statistics.</h3>
         <br>
+        <br>
         <a target="_blank" href='/general_statistics' class="card-text">
-            <h5>There is information about all requests.</h5>
+            <h4>There is information about all requests.</h4>
         <a/>
+        <br>
         <br>
         <a target="_blank" href='/user_statistics' class="card-text">
-            <h5>There is information about specific user.</h5>
+            <h4>There is information about specific user.</h4>
         <a/>
+        <br>
         <br>
         <a target="_blank" href='/statistics_of_users_and_places' class="card-text">
-            <h5>There is information about users requests and places.</h5>
+            <h4>There is information about users requests and places.</h4>
         <a/>
         <br>
+        <br>
         <a target="_blank" href='/last_image' class="card-text">
-            <h5>There is last image.</h5>
+            <h4>There is last image.</h4>
         <a/>
+        <br>
         <br>
         <h3>We believe that this information was useful for you.</h3>
     </body>

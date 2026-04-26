@@ -1,6 +1,6 @@
 #!/bin/bash
 cd AliceProject # Your app working directory!!!
-export PORT=5000
+export PORT=8080
 unset PIP_USER
 
 # Create venv if not exists

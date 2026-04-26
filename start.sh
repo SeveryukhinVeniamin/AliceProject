@@ -1,5 +1,5 @@
 #!/bin/bash
-cd Alice Project # Your app working directory!!!
+cd AliceProject # Your app working directory!!!
 export PORT=5000
 unset PIP_USER
 

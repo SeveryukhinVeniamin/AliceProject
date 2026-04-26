@@ -43,6 +43,7 @@ sistem_colors = [
 def get_coordinates(name):
     # Creating request from data
     geocoder_request = f'{server_address_geocode}apikey={api_key_geocode}&geocode={name}&format=json'
+
     # Sending this request
     response = requests.get(geocoder_request)
 
@@ -51,6 +52,7 @@ def get_coordinates(name):
         json_response = response.json()
         toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
         toponym_coodrinates = toponym["Point"]["pos"]
+
         # Transforming string into list
         return list(map(float, toponym_coodrinates.split(' ')))
     else:
@@ -63,6 +65,7 @@ def get_coordinates(name):
 def get_full_name(name):
     # Creating request from data
     geocoder_request = f'{server_address_geocode}apikey={api_key_geocode}&geocode={name}&format=json'
+
     # Sending this request
     response = requests.get(geocoder_request)
 
@@ -109,12 +112,14 @@ def coord_list_into_string(coordinates):
 def make_image_url(ll, z, theme='light', maptype='map', pt=[], pl=[]):
     # Creating request from data
     ll_spn = f'll={coord_list_into_string(ll)}&z={z}&maptype={maptype}'
+
     # Sending this request
     map_request = f"{server_address_maps}{ll_spn}&apikey={api_key_maps}&theme={theme}"
 
     # Transform pt from lists to a string
     if pt != []:
         map_request += '&pt=' + '~'.join(list(map(lambda x: f'{x[0]},{x[1]},pm2rdm', pt)))
+
     # Transform pl from lists to a string
     if pl != []:
         map_request += '&pl=' + '~'.join(list(

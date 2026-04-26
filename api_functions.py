@@ -26,6 +26,16 @@ SKILL_ID = "4d9bc848-79e1-4e46-a915-0ba0822d0ebd"
 # This is token for sending images to alice skill
 YANDEX_TOKEN = "y0__xC_lMXPBRij9xMgzezK-xaKlt5OX2HisrB0C4VM6L23kucj1A"
 
+sistem_colors = [
+    '0000FFFF',
+    'FF0000FF',
+    '00FF0000',
+    'FFFF00FF',
+    '00FFFF00',
+    'FF00FF00',
+    '000000FF'
+]
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -86,12 +96,16 @@ def coord_list_into_string(coordinates):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Function for creating url for request to static maps
-def make_image_url(ll, z, theme='light', maptype='map', pt=[]):
+def make_image_url(ll, z, theme='light', maptype='map', pt=[], pl=[]):
     ll_spn = f'll={coord_list_into_string(ll)}&z={z}&maptype={maptype}'
     map_request = f"{server_address_maps}{ll_spn}&apikey={api_key_maps}&theme={theme}"
 
     if pt != []:
         map_request += '&pt=' + '~'.join(list(map(lambda x: f'{x[0]},{x[1]},pm2rdm', pt)))
+    if pl != []:
+        map_request += '&pl=' + '~'.join(list(
+            map(lambda y: f'c:{sistem_colors[y[0] % len(sistem_colors)]},w:3,' + ','.join(
+                list(map(lambda x: f'{x[0]},{x[1]}', y[1]))), enumerate(pl))))
 
     return map_request
 
@@ -130,10 +144,11 @@ def send_image(image_name):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Function for doing all process about creating image
-def all_for_picture(place, size, pt=[], theme='light', maptype='map', user_id=None):
+def all_for_picture(place, size, pt=[], pl=[], theme='light', maptype='map', user_id=None):
     pt = list(map(lambda x: get_coordinates(x), pt))
+    pl = list(map(lambda x: list(map(lambda y: get_coordinates(y), x)), pl))
 
-    url = make_image_url(get_coordinates(place), z=size, theme=theme, maptype=maptype, pt=pt)
+    url = make_image_url(get_coordinates(place), z=size, theme=theme, maptype=maptype, pt=pt, pl=pl)
 
     db_sess = db_session.create_session()
 
@@ -175,6 +190,9 @@ def clear_db():
 # If file was used not like module clear data base
 if __name__ == '__main__':
     db_session.global_init('db/statistics.db')
-    clear_db()
+    # clear_db()
     # Пример запроса:
     # print(all_for_picture('Москва', 9, ["Метро Чертановское",  "Метро Чистые пруды"]))
+    #print(all_for_picture('Москва', 10, pt=["Метро Чертановское", "Метро Чистые пруды"],
+    #                      pl=[['Метро Шаболовская', 'Метро Китай-город', 'Метро Рижская'],
+    #                          ['Метро Арбатская', 'Метро Курская']]))

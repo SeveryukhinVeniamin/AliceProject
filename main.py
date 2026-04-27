@@ -297,12 +297,16 @@ def handle_dialog(req, res):
     # ------------------------------------------------------------------------------------------------------------------
     else:
         p, s, pt, pl = (sessionStorage[user_id]["place"], sessionStorage[user_id]["size"],
-                        sessionStorage[user_id]["points"], sessionStorage[user_id]["ways"])
+                        sessionStorage[user_id].get("points", None), sessionStorage[user_id].get("ways", None))
         pt = [] if pt is None else pt
         pl = [] if pl is None else pl
 
+        res['response']['card'] = {}
+        res['response']['card']['type'] = 'BigImage'
+        res['response']['card']['title'] = 'Карта'
         res["response"]["card"]["image_id"] = all_for_picture(p, s, pt=pt, pl=pl, user_id=user_id)
         res['response']['end_session'] = False
+        res['response']['text'] = 'Вот карта'
 
 
 # ----------------------------------------------------------------------------------------------------------------------

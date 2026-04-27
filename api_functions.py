@@ -140,6 +140,7 @@ def save_image(url, file_name=MAP_FILE):
 
     # Check for response
     if not response:
+        print(url)
         return None
 
     # Write response if file
@@ -173,6 +174,7 @@ def send_image(image_name):
 # ----------------------------------------------------------------------------------------------------------------------
 # Function for doing all process about creating image
 def all_for_picture(place, size, pt=[], pl=[], theme='light', maptype='map', user_id=None):
+    size = min(21, max(1, int(size)))
     # Transform pt from name to ll
     pt = list(map(lambda x: get_coordinates(x), pt))
 
@@ -236,7 +238,6 @@ def generate_req(number, users):
 if __name__ == '__main__':
     db_session.global_init('db/statistics.db')
     clear_db()
-    generate_req(20, 4)
     # Examples fro requests:
     # print(all_for_picture('Москва', 9, ["Метро Чертановское",  "Метро Чистые пруды"], user_id=1))
     # print(all_for_picture('Москва', 10, pt=["Метро Чертановское", "Метро Чистые пруды"],

@@ -277,7 +277,7 @@ def handle_dialog(req, res):
         sessionStorage[user_id] = {}
 
         res["response"]["text"] = ("Привет, я путеводитель. "
-                                   "Напиши место с указанием маштаба карты, меток и/или маршрутов,"
+                                   "Напиши место с указанием масштаба карты, меток и/или маршрутов,"
                                    "а я отображу это на карте.")
         return
     # -------------------------------------------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ def cut_in_sections(nlu):
     if "размер" in nlu["tokens"]:
         _size_, last_word = ([i for i in range(nlu["tokens"].index("размер"), last_word)],
                              nlu["tokens"].index("размер"))
-    _place_ = [i for i in range(0, last_word)] if last_word != 0 else None
+    _place_ = [i for i in range(0, last_word)]
     # ------------------------------------------------------------------------------------------------------------------
     for i in nlu["entities"]:
         if i["type"] == "YANDEX.GEO":

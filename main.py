@@ -25,41 +25,41 @@ sessionStorage = {}  # Формат данных: Пользователь: {м�
 def index():
     return '''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rus">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Main page of website</title>
+        <title>Главная страница</title>
     </head>
     
     <body>
-        <h1>Hello client!</h1>
-        <h3>That is main page of the site "Алиса путеводитель" where you can find information about statistics.</h3>
+        <h1>Уважаемый пользователь!</h1>
+        <h3>Это главная страница сайта "Алиса путеводитель", где вы можете найти информацию о статистике чат-бота.</h3>
         <br>
         <br>
         <a target="_blank" href='/general_statistics' class="card-text">
-            <h4>There is information about all requests.</h4>
+            <h4>Информация о всех записях.</h4>
         <a/>
         <br>
         <br>
         <a target="_blank" href='/user_statistics' class="card-text">
-            <h4>There is information about specific user.</h4>
+            <h4>Информация о конкретном пользователе.</h4>
         <a/>
         <br>
         <br>
         <a target="_blank" href='/statistics_of_users_and_places' class="card-text">
-            <h4>There is information about users requests and places.</h4>
+            <h4>Общая информация о пользователях и местах.</h4>
         <a/>
         <br>
         <br>
         <a target="_blank" href='/last_image' class="card-text">
-            <h4>There is last image.</h4>
+            <h4>Последняя нарисованная карта.</h4>
         <a/>
         <br>
         <br>
-        <h3>We believe that this information was useful for you.</h3>
+        <h3>Мы надеемся, что эта информация была вам полезна.</h3>
     </body>
 </html>'''
 
@@ -74,29 +74,29 @@ def user_statistics_(user_id):
     # ------------------------------------------------------------------------------------------------------------------
     text = f'''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rus">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Statistics</title>
+        <title>Статистика пользователя</title>
     </head>
     
     <body>
-        <h1>Statistics of user "{user_id}"</h1>
-        <h2>This user made {len(requests)} requests</h2>
+        <h1>Пользователь "{user_id}".</h1>
+        <h2>Общее количество запросов - {len(requests)}.</h2>
         <br>
         <br>'''
     # ------------------------------------------------------------------------------------------------------------------
     for i, line in enumerate(requests):
         text += f'''
         <div class="card">
-            <h5 class="card-header">Request {i + 1}</h5>
+            <h5 class="card-header">Запрос номер {i + 1}.</h5>
             <div class="card-body">
-                <h4 class="card-title">{line.full_name_place}</h4>
-                <h5 class="card-text">{line.created_date.strftime("Data: %Y-%m-%d, Time: %H:%M:%S")}.</h5>
-                <a target="_blank" href={line.url} class="card-text">URL<a/>
+                <h4 class="card-title">Место карты: {line.full_name_place}.</h4>
+                <h5 class="card-text">{line.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S")}.</h5>
+                <a target="_blank" href={line.url} class="card-text">Ссылка на карту.<a/>
             </div>
         </div>
         <br>
@@ -113,17 +113,17 @@ def user_statistics_(user_id):
 def user_statistics():
     return '''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rus">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Users information</title>
+        <title>Статистика пользователя</title>
     </head>
     
     <body>
-        <h3>Please add to url id of user.</h3>
+        <h3>Пожалуйста, добавьте код пользователя в строке поиска.</h3>
     </body>
 </html>'''
 
@@ -138,30 +138,30 @@ def general_statistics():
     # ------------------------------------------------------------------------------------------------------------------
     text = f'''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rus">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Statistics</title>
+        <title>Общая Статистика</title>
     </head>
     
     <body>
-        <h1>General statistics</h1>
-        <h2>At all, there are {len(requests)} requests</h2>
+        <h1>Общая статистика</h1>
+        <h2>Всего зарегистрировано {len(requests)} обработанных запросов.</h2>
         <br>
         <br>'''
     # ------------------------------------------------------------------------------------------------------------------
     for i, line in enumerate(requests):
         text += f'''
         <div class="card">
-            <h5 class="card-header">Request {i + 1}</h5>
+            <h5 class="card-header">Запрос номер {i + 1}.</h5>
             <div class="card-body">
-                <h4 class="card-title">{line.full_name_place}</h4>
-                <h5 class="card-text">By user '{line.user_id}'</h5>
-                <h5 class="card-text">{line.created_date.strftime("Data: %Y-%m-%d, Time: %H:%M:%S")}.</h5>
-                <a target="_blank" href={line.url} class="card-text">URL<a/>
+                <h4 class="card-title">Место карты: {line.full_name_place}</h4>
+                <h5 class="card-text">Пользователь '{line.user_id}'</h5>
+                <h5 class="card-text">{line.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S")}.</h5>
+                <a target="_blank" href={line.url} class="card-text">Ссылка на карту.<a/>
             </div>
         </div>
         <br>
@@ -181,19 +181,19 @@ def statistics_of_users_and_places():
     # ------------------------------------------------------------------------------------------------------------------
     text = f'''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rus">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Statistics</title>
+        <title>Точечная статистика</title>
     </head>
     
     <body>
-        <h1>Statistics of users and places.</h1>
+        <h1>Точечная статистика.</h1>
         <br>
-        <h3>Users:</h3>'''
+        <h3>Пользователи:</h3>'''
     # ------------------------------------------------------------------------------------------------------------------
     list_of_users = sorted(list(set(list(map(lambda x: x.user_id, lines)))))
     for user in list_of_users:
@@ -201,13 +201,13 @@ def statistics_of_users_and_places():
         last_time = max(list(map(lambda x: x.created_date, list(filter(lambda x: x.user_id == user, lines)))))
         text += f'''
         <br>
-        <h4>{user} - {number_of_requests} requests</h4>
-        <h5>Last activity - {last_time.strftime("%Y-%m-%d; %H:%M:%S")}</h5>'''
+        <h4>"{user}" сделал всего {number_of_requests} запросов.</h4>
+        <h5>Последняя активность - {last_time.strftime("%Y-%m-%d; %H:%M:%S")}.</h5>'''
     # ------------------------------------------------------------------------------------------------------------------
     text += '''
         <br>
         <br>
-        <h3>Places:</h3>'''
+        <h3>Места:</h3>'''
     # ------------------------------------------------------------------------------------------------------------------
     list_of_places = sorted(list(set(list(map(lambda x: x.full_name_place, lines)))))
     for place in list_of_places:
@@ -215,8 +215,8 @@ def statistics_of_users_and_places():
         last_time = max(list(map(lambda x: x.created_date, list(filter(lambda x: x.full_name_place == place, lines)))))
         text += f'''
         <br>
-        <h4>{place} - {number_of_requests} requests</h4>
-        <h5>Last search - {last_time.strftime("%Y-%m-%d; %H:%M:%S")}</h5>'''
+        <h4>"{place}" искалось в {number_of_requests} запросах.</h4>
+        <h5>Последний поиск - {last_time.strftime("%Y-%m-%d; %H:%M:%S")}.</h5>'''
     # ------------------------------------------------------------------------------------------------------------------
     text += '''
     </body>
@@ -231,20 +231,21 @@ def statistics_of_users_and_places():
 def last_image():
     return '''
 <!DOCTYPE html>
-<html lang="en">
+<html lang="rus">
     <head>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" 
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Last loaded image</title>
+        <title>Последняя карта</title>
     </head>
 
     <body>
-        <h1>Last loaded image</h1>
-        <img src='static/img/map.png' alt='It looks like no images were loaded.'>
+        <h1>Последняя загруженная карта</h1>
+        <img src='static/img/map.png' alt='Похоже в этом приложении карт ещё не загружалось.'>
     </body>
 </html>'''
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -272,14 +273,14 @@ def main():
 def handle_dialog(req, res):
     user_id = req["session"]["user_id"]
 
-    if req["session"]["new"]: # Определие нового пользователя
+    if req["session"]["new"]:  # Определие нового пользователя
         sessionStorage[user_id] = {}
 
         res["response"]["text"] = ("Привет, я путеводитель. "
                                    "Напиши место с указанием маштаба карты, меток и/или маршрутов,"
                                    "а я отображу это на карте.")
         return
-    #-------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------------
     # Изменение параметров карты в зависимости от переданных переменных
     message_sections = cut_in_sections(req["request"]["nlu"])
     for i in message_sections:
@@ -342,6 +343,6 @@ def cut_in_sections(nlu):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8080))
     serve(app, host='0.0.0.0', port=port)
     # serve(app, host='127.0.0.1', port=port)

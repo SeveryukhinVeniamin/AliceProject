@@ -36,7 +36,7 @@ def user_statistics(user_id):
 
     # ------------------------------------------------------------------------------------------------------------------
     transform_list = list(map(lambda x:
-        [x.full_name_place, x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url], requests))
+        [x.full_name_place, x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url], requests))[::-1]
     return render_template("user_statistics.html",
                            user_id=user_id, number=len(transform_list), requests=transform_list)
 
@@ -46,7 +46,11 @@ def user_statistics(user_id):
 # Help page
 @app.route('/user_statistics')
 def user_statistics_help():
-    return render_template('user_statistics_help.html')
+    db_sess = db_session.create_session()
+    lines = db_sess.query(Statistics).all()
+    list_of_users = sorted(list(set(list(map(lambda x: x.user_id, lines)))))
+    return render_template('user_statistics_help.html',
+                           number=len(list_of_users), list_of_users=list_of_users)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -57,7 +61,7 @@ def general_statistics():
     db_sess = db_session.create_session()
     requests = db_sess.query(Statistics).all()
     transform_list = list(map(lambda x: [x.full_name_place, x.user_id,
-                                         x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url], requests))
+                    x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url], requests))[::-1]
 
     # ------------------------------------------------------------------------------------------------------------------
     return render_template('general_statistics.html',

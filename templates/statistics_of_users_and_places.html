@@ -1,29 +1,35 @@
-<!DOCTYPE html>
-<html lang="rus">
-    <head>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Точечная статистика</title>
-    </head>
+{% extends "base.html"%}
 
-    <body>
-        <h1>Точечная статистика.</h1>
-        <br>
-        <h3>Пользователи:</h3>
+{% set title = 'Точечная статистика' %}
+{% block content %}
+    <h1>Точечная статистика.</h1>
+    <br>
+    <h3>Пользователи:</h3>
+
     {% for user in list_of_users %}
+        <div class="card" style="background-color: skyblue">
+            <h5 class="card-header">"{{user[0]}}"</h5>
+            <div class="card-body" style="background-color: ghostwhite">
+                <h4 class="card-title">Сделал всего {{user[1]}} запросов.</h4>
+                <h5 class="card-text">Последняя активность - {{user[2]}}.</h5>
+            </div>
+        </div>
         <br>
-        <h4>"{{user[0]}}" сделал всего {{user[1]}} запросов.</h4>
-        <h5>Последняя активность - {{user[2]}}.</h5>
+        <br>
     {% endfor %}
-        <br>
-        <br>
-        <h3>Места:</h3>
+
+    <br>
+    <br>
+    <h3>Места:</h3>
     {% for place in list_of_places %}
+        <div class="card" style="background-color: skyblue">
+            <h5 class="card-header">"{{place[0]}}"</h5>
+            <div class="card-body" style="background-color: ghostwhite">
+                <h4 class="card-title">Искалось в {{place[1]}} запросах.</h4>
+                <h5 class="card-text">Последний поиск - {{place[2]}}.</h5>
+            </div>
+        </div>
         <br>
-        <h4>"{{place[0]}}" искалось в {{place[1]}} запросах.</h4>
-        <h5>Последний поиск - {{place[2]}}.</h5>
+        <br>
     {% endfor %}
-    </body>
-</html>
+{% endblock %}

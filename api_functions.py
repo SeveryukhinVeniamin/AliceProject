@@ -248,8 +248,3 @@ def generate_req(number, users):
 if __name__ == '__main__':
     db_session.global_init('db/statistics.db')
     clear_db()
-    # Examples fro requests:
-    # print(all_for_picture('Москва', 9, ["Метро Чертановское",  "Метро Чистые пруды"], user_id=1))
-    # print(all_for_picture('Москва', 10, pt=["Метро Чертановское", "Метро Чистые пруды"],
-    #                      pl=[['Метро Шаболовская', 'Метро Китай-город', 'Метро Рижская'],
-    #                          ['Метро Арбатская', 'Метро Курская']], user_id=2)

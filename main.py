@@ -16,6 +16,29 @@ logging.basicConfig(level=logging.INFO)
 
 sessionStorage = {}  # Формат данных: Пользователь: {место, маштаб, метки, маршруты, кнопки}
 
+key_words_for_size = []
+key_words_for_pt = []
+key_words_for_pl = []
+
+for end in ['', 'а', 'у', 'ом', 'е', 'ы', 'ов', 'ам', 'ами', 'ах']:
+    key_words_for_size.append('размер' + end)
+    key_words_for_size.append('масштаб' + end)
+    key_words_for_pl.append('маршрут' + end)
+
+for end in ['ка', 'ки', 'ок', 'ке', 'кой', 'ками', 'ку', 'ках']:
+    key_words_for_pt.append('мет' + end)
+
+for end in ['ие', 'ия', 'ий', 'ию', 'иям', 'ием', 'иями', 'ии', 'иях']:
+    key_words_for_pt.append('обозначен' + end)
+    key_words_for_size.append('приближен' + end)
+
+for end in ['ь', 'и', 'я', 'ей', 'ю', 'ям', 'ем', 'ём', 'и', 'ях']:
+    key_words_for_pl.append('пут' + end)
+
+key_words_for_size.sort()
+key_words_for_pt.sort()
+key_words_for_pl.sort()
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -36,7 +59,8 @@ def user_statistics(user_id):
 
     # ------------------------------------------------------------------------------------------------------------------
     transform_list = list(map(lambda x:
-        [x.full_name_place, x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url], requests))[::-1]
+                              [x.full_name_place, x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url],
+                              requests))[::-1]
     return render_template("user_statistics.html",
                            user_id=user_id, number=len(transform_list), requests=transform_list)
 
@@ -61,7 +85,8 @@ def general_statistics():
     db_sess = db_session.create_session()
     requests = db_sess.query(Statistics).all()
     transform_list = list(map(lambda x: [x.full_name_place, x.user_id,
-                    x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url], requests))[::-1]
+                                         x.created_date.strftime("Дата: %Y-%m-%d, Время: %H:%M:%S"), x.url], requests))[
+        ::-1]
 
     # ------------------------------------------------------------------------------------------------------------------
     return render_template('general_statistics.html',
@@ -82,7 +107,8 @@ def statistics_of_users_and_places():
     for user in list_of_users:
         number_of_requests = len(list(filter(lambda x: x.user_id == user, lines)))
         last_time = max(list(map(lambda x: x.created_date, list(filter(lambda x: x.user_id == user,
-            lines))))).strftime("Дата: %Y-%m-%d, Время: %H:%M:%S")
+                                                                       lines))))).strftime(
+            "Дата: %Y-%m-%d, Время: %H:%M:%S")
         transform_users.append([user, number_of_requests, last_time])
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -91,7 +117,8 @@ def statistics_of_users_and_places():
     for place in list_of_places:
         number_of_requests = len(list(filter(lambda x: x.full_name_place == place, lines)))
         last_time = max(list(map(lambda x: x.created_date, list(filter(lambda x: x.full_name_place == place,
-            lines))))).strftime("Дата: %Y-%m-%d, Время: %H:%M:%S")
+                                                                       lines))))).strftime(
+            "Дата: %Y-%m-%d, Время: %H:%M:%S")
         transform_places.append([place, number_of_requests, last_time])
     return render_template('statistics_of_users_and_places.html',
                            list_of_users=transform_users, list_of_places=transform_places)
@@ -140,7 +167,7 @@ def handle_dialog(req, res):
         return
     # -------------------------------------------------------------------------------------------------------------------
     # Изменение параметров карты в зависимости от переданных переменных
-    message_sections = cut_in_sections(req["request"]["nlu"])
+    message_sections = cut_in_sections(req["request"]["nlu"], user_id)
     for i in message_sections:
         if message_sections[i] is not None:
             sessionStorage[user_id][i] = message_sections[i]
@@ -150,7 +177,7 @@ def handle_dialog(req, res):
         res["response"]["text"] = "Ты забыл указать место."
         res['response']['end_session'] = False
     elif "size" not in sessionStorage[user_id]:
-        res["response"]["text"] = "Ты забыл указать маштаб."
+        res["response"]["text"] = "Ты забыл указать масштаб."
         res['response']['end_session'] = False
     # ------------------------------------------------------------------------------------------------------------------
     else:
@@ -170,12 +197,62 @@ def handle_dialog(req, res):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Распределение информации по типу: место, размер, метки или маршруты
-def cut_in_sections(nlu):
-    place, size, points, ways = None, None, None, None
-    last_word = len(nlu["tokens"])
+def cut_in_sections(nlu, user_id):
+    place, size, points, ways = (None, None,
+                                 sessionStorage[user_id].get("points", []), sessionStorage[user_id].get("ways", []))
+    # last_word = len(nlu["tokens"])
 
-    # Определиние индексов элементов запроса
-    if "маршруты" in nlu["tokens"]:
+    list_of_geo = list(filter(lambda x: x["type"] == "YANDEX.GEO", nlu["entities"]))
+    list_of_geo1 = []
+
+    for geo in list_of_geo:
+        for loc in geo["value"]:
+            list_of_geo1.append(geo["value"][loc])
+
+    last_type = 'place'
+    for token in nlu["tokens"]:
+
+        if token in key_words_for_size:
+            last_type = 'size'
+
+        elif token in key_words_for_pt:
+            last_type = 'points'
+
+        elif token in key_words_for_pl:
+            last_type = 'ways'
+            ways.append([])
+
+        elif last_type == 'place':
+            if token in list_of_geo1:
+                for geo in list_of_geo:
+                    if token in geo["value"].values():
+                        place = ' '.join(geo["value"].values())
+                        last_type = 'no'
+                        list_of_geo.remove(geo)
+                        break
+
+        elif last_type == 'size':
+            if token.isdigit():
+                size = int(token)
+
+        elif last_type == 'points':
+            if token in list_of_geo1:
+                for geo in list_of_geo:
+                    if token in geo["value"].values():
+                        points.append(' '.join(geo["value"].values()))
+                        list_of_geo.remove(geo)
+                        break
+
+        elif last_type == 'ways':
+            if token in list_of_geo1:
+                for geo in list_of_geo:
+                    if token in geo["value"].values():
+                        ways[-1].append(' '.join(geo["value"].values()))
+                        list_of_geo.remove(geo)
+                        break
+
+
+    '''    if "маршруты" in nlu["tokens"]:
         _ways_, last_word = ([i for i in range(nlu["tokens"].index("маршруты"), last_word)],
                              nlu["tokens"].index("маршруты"))
     if "метки" in nlu["tokens"]:
@@ -183,19 +260,17 @@ def cut_in_sections(nlu):
                                nlu["tokens"].index("метки"))
     if "размер" in nlu["tokens"]:
         _size_, last_word = ([i for i in range(nlu["tokens"].index("размер"), last_word)],
-                             nlu["tokens"].index("размер"))
-    _place_ = [i for i in range(0, last_word)]
+                             nlu["tokens"].index("размер"))'''
+    # _place_ = [i for i in range(0, last_word)]
     # ------------------------------------------------------------------------------------------------------------------
-    for i in nlu["entities"]:
+    '''for i in nlu["entities"]:
         if i["type"] == "YANDEX.GEO":
             if i["tokens"]["start"] in _place_ and i["tokens"]["end"] - 1 in _place_:
                 place = " ".join(reversed([i["value"][j] for j in i["value"]]))
             elif i["tokens"]["start"] in _points_ and i["tokens"]["end"] - 1 in _points_:
-                if points is None:
-                    points = []
                 points.append(" ".join(reversed([i["value"][j] for j in i["value"]])))
         elif i["type"] == "YANDEX.NUMBER" and i["tokens"]["start"] in _size_ and i["tokens"]["end"] - 1 in _size_:
-            size = i["value"]
+            size = i["value"]'''
 
     message_sections = {"place": place, "size": size, "points": points, "ways": ways}
 

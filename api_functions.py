@@ -110,7 +110,12 @@ def coord_list_into_string(coordinates):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Function for creating url for request to static maps
-def make_image_url(ll, z, theme='light', maptype='map', pt=[], pl=[]):
+def make_image_url(ll, z, theme='light', maptype='map', pt=None, pl=None):
+    if pt is None:
+        pt = []
+    if pl is None:
+        pl = []
+
     # Creating request from data
     ll_spn = f'll={coord_list_into_string(ll)}&z={z}&maptype={maptype}'
 
@@ -173,7 +178,12 @@ def send_image(image_name):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Function for doing all process about creating image
-def all_for_picture(place, size, pt=[], pl=[], theme='light', maptype='map', user_id=None):
+def all_for_picture(place, size, pt=None, pl=None, theme='light', maptype='map', user_id=None):
+    if pt is None:
+        pt = []
+    if pl is None:
+        pl = []
+
     size = min(21, max(1, int(size)))
     # Transform pt from name to ll
     pt = list(map(lambda x: get_coordinates(x), pt))
@@ -243,6 +253,3 @@ if __name__ == '__main__':
     # print(all_for_picture('Москва', 10, pt=["Метро Чертановское", "Метро Чистые пруды"],
     #                      pl=[['Метро Шаболовская', 'Метро Китай-город', 'Метро Рижская'],
     #                          ['Метро Арбатская', 'Метро Курская']], user_id=2)
-    '''all_for_picture('Москва', 10, pt=["Метро Чертановское", "Метро Чистые пруды"],
-                          pl=[['Метро Шаболовская', 'Метро Китай-город', 'Метро Рижская'],
-                              ['Метро Арбатская', 'Метро Курская']], user_id=2)'''

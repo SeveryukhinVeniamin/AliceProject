@@ -203,11 +203,6 @@ def cut_in_sections(nlu, user_id):
     # last_word = len(nlu["tokens"])
 
     list_of_geo = list(filter(lambda x: x["type"] == "YANDEX.GEO", nlu["entities"]))
-    list_of_geo1 = []
-
-    for geo in list_of_geo:
-        for loc in geo["value"]:
-            list_of_geo1.append(geo["value"][loc])
 
     last_type = 'place'
     for num, token in enumerate(nlu["tokens"]):
@@ -235,20 +230,18 @@ def cut_in_sections(nlu, user_id):
                 size = int(token)
 
         elif last_type == 'points':
-            if token in list_of_geo1:
-                for geo in list_of_geo:
-                    if geo["tokens"]['start'] <= num < geo["tokens"]['end']:
-                        points.append(' '.join(geo["value"].values()))
-                        list_of_geo.remove(geo)
-                        break
+            for geo in list_of_geo:
+                if geo["tokens"]['start'] <= num < geo["tokens"]['end']:
+                    points.append(' '.join(geo["value"].values()))
+                    list_of_geo.remove(geo)
+                    break
 
         elif last_type == 'ways':
-            if token in list_of_geo1:
-                for geo in list_of_geo:
-                    if geo["tokens"]['start'] <= num < geo["tokens"]['end']:
-                        ways[-1].append(' '.join(geo["value"].values()))
-                        list_of_geo.remove(geo)
-                        break
+            for geo in list_of_geo:
+                if geo["tokens"]['start'] <= num < geo["tokens"]['end']:
+                    ways[-1].append(' '.join(geo["value"].values()))
+                    list_of_geo.remove(geo)
+                    break
 
 
     '''    if "маршруты" in nlu["tokens"]:
@@ -272,7 +265,7 @@ def cut_in_sections(nlu, user_id):
             size = i["value"]'''
 
     message_sections = {"place": place, "size": size, "points": points, "ways": ways}
-
+    print(message_sections)
     return message_sections
 
 

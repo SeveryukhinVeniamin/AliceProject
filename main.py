@@ -210,7 +210,7 @@ def cut_in_sections(nlu, user_id):
             list_of_geo1.append(geo["value"][loc])
 
     last_type = 'place'
-    for token in nlu["tokens"]:
+    for num, token in enumerate(nlu["tokens"]):
 
         if token in key_words_for_size:
             last_type = 'size'
@@ -223,13 +223,12 @@ def cut_in_sections(nlu, user_id):
             ways.append([])
 
         elif last_type == 'place':
-            if token in list_of_geo1:
-                for geo in list_of_geo:
-                    if token in geo["value"].values():
-                        place = ' '.join(geo["value"].values())
-                        last_type = 'no'
-                        list_of_geo.remove(geo)
-                        break
+            for geo in list_of_geo:
+                if geo["tokens"]['start'] <= num < geo["tokens"]['end']:
+                    place = ' '.join(geo["value"].values())
+                    last_type = 'no'
+                    list_of_geo.remove(geo)
+                    break
 
         elif last_type == 'size':
             if token.isdigit():
@@ -238,7 +237,7 @@ def cut_in_sections(nlu, user_id):
         elif last_type == 'points':
             if token in list_of_geo1:
                 for geo in list_of_geo:
-                    if token in geo["value"].values():
+                    if geo["tokens"]['start'] <= num < geo["tokens"]['end']:
                         points.append(' '.join(geo["value"].values()))
                         list_of_geo.remove(geo)
                         break
@@ -246,7 +245,7 @@ def cut_in_sections(nlu, user_id):
         elif last_type == 'ways':
             if token in list_of_geo1:
                 for geo in list_of_geo:
-                    if token in geo["value"].values():
+                    if geo["tokens"]['start'] <= num < geo["tokens"]['end']:
                         ways[-1].append(' '.join(geo["value"].values()))
                         list_of_geo.remove(geo)
                         break

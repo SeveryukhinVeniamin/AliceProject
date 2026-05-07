@@ -27,13 +27,13 @@ SKILL_ID = "4d9bc848-79e1-4e46-a915-0ba0822d0ebd"
 # This is token for sending images to alice skill
 YANDEX_TOKEN = "y0__xC_lMXPBRij9xMgzezK-xaKlt5OX2HisrB0C4VM6L23kucj1A"
 
-sistem_colors = [
+system_colors = [
     '0000FFFF',
     'FF0000FF',
-    '00FF0000',
+    '00FF00FF',
     'FFFF00FF',
-    '00FFFF00',
-    'FF00FF00',
+    '00FFFFFF',
+    'FF00FFFF',
     '000000FF'
 ]
 
@@ -129,7 +129,7 @@ def make_image_url(ll, z, theme='light', maptype='map', pt=None, pl=None):
     # Transform pl from lists to a string
     if pl != []:
         map_request += '&pl=' + '~'.join(list(
-            map(lambda y: f'c:{sistem_colors[y[0] % len(sistem_colors)]},w:3,' + ','.join(
+            map(lambda y: f'c:{system_colors[y[0] % len(system_colors)]},w:3,' + ','.join(
                 list(map(lambda x: f'{x[0]},{x[1]}', y[1]))), enumerate(pl))))
 
     # Sending final url

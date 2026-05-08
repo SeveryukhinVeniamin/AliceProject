@@ -176,8 +176,13 @@ def handle_dialog(req, res):
         sessionStorage[user_id] = {}
 
         res["response"]["text"] = ("Привет, я путеводитель. "
-                                   "Напиши место с указанием масштаба карты, меток и/или маршрутов,"
-                                   "а я отображу это на карте.")
+                                   "Напиши место, которое хочешь увидеть на карте. "
+                                   "Ты можешь указать масштаб карты, "
+                                   "где 1 - вся планета, 21 - максимальное приближение. " 
+                                   "А также метки и/или маршруты, а я отображу всё это на карте. "
+                                   "Как дополнительные возможности можно использовать "
+                                   "переключение темы и стиля карты (обычный, водительский, транспортный). "
+                                   "Ещё существует команда 'Очистка' для очищения параметров карты.")
         return
     # -------------------------------------------------------------------------------------------------------------------
     # Изменение параметров карты в зависимости от переданных переменных
@@ -190,12 +195,9 @@ def handle_dialog(req, res):
     if "place" not in sessionStorage[user_id]:
         res["response"]["text"] = "Ты забыл указать место."
         res['response']['end_session'] = False
-    elif "size" not in sessionStorage[user_id]:
-        res["response"]["text"] = "Ты забыл указать масштаб."
-        res['response']['end_session'] = False
     # ------------------------------------------------------------------------------------------------------------------
     else:
-        p, s, pt, pl, t, m = (sessionStorage[user_id]["place"], sessionStorage[user_id]["size"],
+        p, s, pt, pl, t, m = (sessionStorage[user_id]["place"], sessionStorage[user_id].get("size", None),
                         sessionStorage[user_id].get("points", None), sessionStorage[user_id].get("ways", None),
                            sessionStorage[user_id].get("theme", 'light'), sessionStorage[user_id].get("map", 'map'))
         pt = [] if pt is None else pt
@@ -203,20 +205,29 @@ def handle_dialog(req, res):
 
         res['response']['card'] = {}
         res['response']['card']['type'] = 'BigImage'
-        res['response']['card']['title'] = 'Карта'
+        res['response']['card']['title'] = f'Вот карта по адресу {get_full_name(p)}'
         res["response"]["card"]["image_id"] = all_for_picture(p, s, pt=pt, pl=pl, user_id=user_id, theme=t, maptype=m)
         res['response']['end_session'] = False
-        res['response']['text'] = 'Вот карта'
+        res['response']['text'] = f'Вот карта по адресу {get_full_name(p)}'
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Распределение информации по типу: место, размер, метки или маршруты
 def cut_in_sections(nlu, user_id):
-    place, size, points, ways, theme, map_ = (None, None,
-                        sessionStorage[user_id].get("points", []), sessionStorage[user_id].get("ways", []),
-                        sessionStorage[user_id].get("theme", 'light'), sessionStorage[user_id].get("map", 'map'))
-    # last_word = len(nlu["tokens"])
+    place = None
+    size = sessionStorage[user_id].get("size", 0)
+    points = sessionStorage[user_id].get("points", [])
+    ways = sessionStorage[user_id].get("ways", [])
+    theme = sessionStorage[user_id].get("theme", 'light')
+    maptype = sessionStorage[user_id].get("map", 'map')
+
+    if 'очистка' in nlu["tokens"]:
+        size = 0
+        points = []
+        ways = []
+        theme = 'light'
+        maptype = 'map'
 
     list_of_geo = list(filter(lambda x: x["type"] == "YANDEX.GEO", nlu["entities"]))
 
@@ -249,6 +260,8 @@ def cut_in_sections(nlu, user_id):
         elif last_type == 'size':
             if token.isdigit():
                 size = int(token)
+            elif 'авто' in token:
+                size = 0
 
         elif last_type == 'points':
             for geo in list_of_geo:
@@ -274,38 +287,16 @@ def cut_in_sections(nlu, user_id):
 
         elif last_type == 'map':
             if 'прост' in token or 'обычн' in token:
-                map_ = 'map'
+                maptype = 'map'
                 last_type = 'place'
             elif 'водител' in token or 'доро' in token:
-                map_ = 'driving'
+                maptype = 'driving'
                 last_type = 'place'
             elif 'транспорт' in token:
-                map_ = 'transit'
+                maptype = 'transit'
                 last_type = 'place'
 
-
-    '''    if "маршруты" in nlu["tokens"]:
-        _ways_, last_word = ([i for i in range(nlu["tokens"].index("маршруты"), last_word)],
-                             nlu["tokens"].index("маршруты"))
-    if "метки" in nlu["tokens"]:
-        _points_, last_word = ([i for i in range(nlu["tokens"].index("метки"), last_word)],
-                               nlu["tokens"].index("метки"))
-    if "размер" in nlu["tokens"]:
-        _size_, last_word = ([i for i in range(nlu["tokens"].index("размер"), last_word)],
-                             nlu["tokens"].index("размер"))'''
-    # _place_ = [i for i in range(0, last_word)]
-    # ------------------------------------------------------------------------------------------------------------------
-    '''for i in nlu["entities"]:
-        if i["type"] == "YANDEX.GEO":
-            if i["tokens"]["start"] in _place_ and i["tokens"]["end"] - 1 in _place_:
-                place = " ".join(reversed([i["value"][j] for j in i["value"]]))
-            elif i["tokens"]["start"] in _points_ and i["tokens"]["end"] - 1 in _points_:
-                points.append(" ".join(reversed([i["value"][j] for j in i["value"]])))
-        elif i["type"] == "YANDEX.NUMBER" and i["tokens"]["start"] in _size_ and i["tokens"]["end"] - 1 in _size_:
-            size = i["value"]'''
-
-    message_sections = {"place": place, "size": size, "points": points, "ways": ways, "theme": theme, "map": map_}
-    print(message_sections)
+    message_sections = {"place": place, "size": size, "points": points, "ways": ways, "theme": theme, "map": maptype}
     return message_sections
 
 
@@ -314,4 +305,3 @@ def cut_in_sections(nlu, user_id):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8080))
     serve(app, host='0.0.0.0', port=port)
-    # serve(app, host='127.0.0.1', port=port)

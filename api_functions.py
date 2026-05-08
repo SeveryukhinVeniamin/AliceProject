@@ -62,6 +62,29 @@ def get_coordinates(name):
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
+# Function for getting spn of place
+def get_spn(name):
+    # Creating request from data
+    geocoder_request = f'{server_address_geocode}apikey={api_key_geocode}&geocode={name}&format=json'
+
+    # Sending this request
+    response = requests.get(geocoder_request)
+
+    # Checking for response and getting spn
+    if response:
+        json_response = response.json()
+        toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+
+        lowerCorner = list(map(float, toponym["boundedBy"]["Envelope"]["lowerCorner"].split(' ')))
+        upperCorner = list(map(float, toponym["boundedBy"]["Envelope"]["upperCorner"].split(' ')))
+
+        return [upperCorner[0] - lowerCorner[0], upperCorner[1] - lowerCorner[1]]
+    else:
+        return None
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Function for getting full name of place
 def get_full_name(name):
     # Creating request from data
@@ -110,17 +133,22 @@ def coord_list_into_string(coordinates):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Function for creating url for request to static maps
-def make_image_url(ll, z, theme='light', maptype='map', pt=None, pl=None):
+def make_image_url(ll, z, spn, theme='light', maptype='map', pt=None, pl=None):
     if pt is None:
         pt = []
     if pl is None:
         pl = []
 
     # Creating request from data
-    ll_spn = f'll={coord_list_into_string(ll)}&z={z}&maptype={maptype}'
+    ll_spn = f'll={coord_list_into_string(ll)}&maptype={maptype}'
+
+    if z is not None:
+        ll_spn += f'&z={z}'
+    elif spn is not None:
+        ll_spn += f'&spn={coord_list_into_string(spn)}'
 
     # Sending this request
-    map_request = f"{server_address_maps}{ll_spn}&apikey={api_key_maps}&theme={theme}"
+    map_request = f"{server_address_maps}{ll_spn}&apikey={api_key_maps}&theme={theme}&size=512,230"
 
     # Transform pt from lists to a string
     if pt != []:
@@ -178,13 +206,18 @@ def send_image(image_name):
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
 # Function for doing all process about creating image
-def all_for_picture(place, size, pt=None, pl=None, theme='light', maptype='map', user_id=None):
+def all_for_picture(place, size=None, pt=None, pl=None, theme='light', maptype='map', user_id=None):
     if pt is None:
         pt = []
     if pl is None:
         pl = []
 
-    size = min(21, max(1, int(size)))
+    if size is not None and size != 0:
+        size = min(21, max(1, int(size)))
+        spn = None
+    else:
+        spn = get_spn(place)
+        size = None
     # Transform pt from name to ll
     pt = list(map(lambda x: get_coordinates(x), pt))
 
@@ -192,7 +225,7 @@ def all_for_picture(place, size, pt=None, pl=None, theme='light', maptype='map',
     pl = list(map(lambda x: list(map(lambda y: get_coordinates(y), x)), pl))
 
     # Creating request from data
-    url = make_image_url(get_coordinates(place), z=size, theme=theme, maptype=maptype, pt=pt, pl=pl)
+    url = make_image_url(get_coordinates(place), z=size, spn=spn, theme=theme, maptype=maptype, pt=pt, pl=pl)
 
     # Creating a session for db
     db_sess = db_session.create_session()
@@ -237,6 +270,10 @@ def clear_db():
     # Make a commit
     db_sess.commit()
 
+
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+# Function for statistics generates some random requests
 def generate_req(number, users):
     for i in range(number):
         all_for_picture(random.choice(['Москва', 'Санкт-Петербург']), random.randint(8, 12), user_id=random.randint(1, users))

@@ -158,7 +158,7 @@ def make_image_url(ll, z, spn, theme='light', maptype='map', pt=None, pl=None):
     if pl != []:
         map_request += '&pl=' + '~'.join(list(
             map(lambda y: f'c:{system_colors[y[0] % len(system_colors)]},w:3,' + ','.join(
-                list(map(lambda x: f'{x[0]},{x[1]}', y[1]))), enumerate(pl))))
+                list(map(lambda x: f'{x[0]},{x[1]}', y[1]))), enumerate(list(filter(lambda x: len(x) > 1, pl))))))
 
     # Sending final url
     return map_request

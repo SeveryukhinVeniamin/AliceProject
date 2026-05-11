@@ -37,6 +37,16 @@ system_colors = [
     '000000FF'
 ]
 
+pt_colors = [
+    'rd',
+    'db',
+    'gn',
+    'yw',
+    'vv',
+    'gr',
+    'nt'
+]
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------------------
@@ -152,7 +162,8 @@ def make_image_url(ll, z, spn, theme='light', maptype='map', pt=None, pl=None):
 
     # Transform pt from lists to a string
     if pt != []:
-        map_request += '&pt=' + '~'.join(list(map(lambda x: f'{x[0]},{x[1]},pm2rdm', pt)))
+        map_request += '&pt=' + '~'.join(
+            list(map(lambda x: f'{x[1][0]},{x[1][1]},pm2{pt_colors[x[0] % len(pt_colors)]}m', enumerate(pt))))
 
     # Transform pl from lists to a string
     if pl != []:
@@ -231,7 +242,7 @@ def all_for_picture(place, size=None, pt=None, pl=None, theme='light', maptype='
     db_sess = db_session.create_session()
 
     # Checking for this url in db
-    #If it is there just take id from db
+    # If it is there just take id from db
     map_id = None
     for stat in db_sess.query(Statistics).filter(Statistics.url == url):
         map_id = stat.picture_id
@@ -276,7 +287,8 @@ def clear_db():
 # Function for statistics generates some random requests
 def generate_req(number, users):
     for i in range(number):
-        all_for_picture(random.choice(['Москва', 'Санкт-Петербург']), random.randint(8, 12), user_id=random.randint(1, users))
+        all_for_picture(random.choice(['Москва', 'Санкт-Петербург']), random.randint(8, 12),
+                        user_id=random.randint(1, users))
 
 
 # ----------------------------------------------------------------------------------------------------------------------

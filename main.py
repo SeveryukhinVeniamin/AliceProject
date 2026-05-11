@@ -178,7 +178,7 @@ def handle_dialog(req, res):
         res["response"]["text"] = ("Привет, я путеводитель. "
                                    "Напиши место, которое хочешь увидеть на карте. "
                                    "Ты можешь указать масштаб карты, "
-                                   "где 1 - вся планета, 21 - максимальное приближение. " 
+                                   "где 1 - вся планета, 21 - максимальное приближение. "
                                    "А также метки и/или маршруты, а я отображу всё это на карте. "
                                    "Как дополнительные возможности можно использовать "
                                    "переключение темы и стиля карты (обычный, водительский, транспортный). "
@@ -203,13 +203,13 @@ def handle_dialog(req, res):
     # ------------------------------------------------------------------------------------------------------------------
     # Обработка недостаточной информации
     if "place" not in sessionStorage[user_id]:
-        res["response"]["text"] = "Ты забыл указать место."
+        res["response"]["text"] = "Пожалуйста, укажите место, которое хотите увидеть."
         res['response']['end_session'] = False
     # ------------------------------------------------------------------------------------------------------------------
     else:
         p, s, pt, pl, t, m = (sessionStorage[user_id]["place"], sessionStorage[user_id].get("size", None),
-                        sessionStorage[user_id].get("points", None), sessionStorage[user_id].get("ways", None),
-                           sessionStorage[user_id].get("theme", 'light'), sessionStorage[user_id].get("map", 'map'))
+                              sessionStorage[user_id].get("points", None), sessionStorage[user_id].get("ways", None),
+                              sessionStorage[user_id].get("theme", 'light'), sessionStorage[user_id].get("map", 'map'))
         pt = [] if pt is None else pt
         pl = [] if pl is None else pl
 
@@ -270,8 +270,10 @@ def cut_in_sections(nlu, user_id):
         elif last_type == 'size':
             if token.isdigit():
                 size = int(token)
+                last_type = 'place'
             elif 'авто' in token:
                 size = 0
+                last_type = 'place'
 
         elif last_type == 'points':
             for geo in list_of_geo:
@@ -288,10 +290,10 @@ def cut_in_sections(nlu, user_id):
                     break
 
         elif last_type == 'theme':
-            if 'свет' in token or 'бел' in token:
+            if 'свет' in token or 'бел' in token or 'бел' in token or 'обычн' in token or 'дневн' in token:
                 theme = 'light'
                 last_type = 'place'
-            elif 'темн' in token or 'тёмн' in token or 'чёрн' in token or 'черн' in token:
+            elif 'темн' in token or 'тёмн' in token or 'чёрн' in token or 'черн' in token or 'ночн' in token:
                 theme = 'dark'
                 last_type = 'place'
 
